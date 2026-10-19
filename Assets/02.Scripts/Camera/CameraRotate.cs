@@ -16,10 +16,11 @@ public class CameraRotate : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
 
+        GameLogger.Log($"mouseX : {mouseX}, mouseY : {mouseY}");
+
         // 2. 마우스 입력만큼 회전값을 누적한다.
-        float deltaTime = Time.deltaTime;
-        _accumulationX += mouseX * _rotationSpeed * deltaTime;
-        _accumulationY += -mouseY * _rotationSpeed * deltaTime;
+        _accumulationX += mouseX * _rotationSpeed * Time.deltaTime;
+        _accumulationY += -mouseY * _rotationSpeed * Time.deltaTime;
 
         // 3. 누적하기 전에 내 변수에서 먼저 -90 ~ 90도로 제한
         _accumulationY = Mathf.Clamp(_accumulationY, -90, 90);
