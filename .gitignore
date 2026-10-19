@@ -110,6 +110,7 @@ InitTestScene*.unity*
 
 # Rider (JetBrains IDE) 설정 폴더
 .idea/
+.idea/**
 
 # macOS Finder 생성 파일
 .DS_Store

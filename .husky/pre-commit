@@ -19,4 +19,4 @@
 ## or put your custom commands -------------------
 #echo 'Husky.Net is awesome!'
 
-dotnet format SKKU-GA-Study03.sln --verify-no-changes --severity warn --include 02.Scripts/
+dotnet format SKKU-GA-Study03.sln --verify-no-changes --severity warn --include Assets/02.Scripts/
