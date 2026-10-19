@@ -113,3 +113,7 @@ InitTestScene*.unity*
 
 # macOS Finder 생성 파일
 .DS_Store
+
+# Gemini CLI
+.gemini/
+gha-creds-*.json
