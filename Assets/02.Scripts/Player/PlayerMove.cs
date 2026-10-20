@@ -25,6 +25,16 @@ public class PlayerMove : MonoBehaviour
     /// </summary>
     private int _jumpCount = 0;
 
+    /// <summary>
+    /// 스태미나
+    /// </summary>
+    public float Stamina = 100f;
+
+    /// <summary>
+    /// 점프 시 감소할 스태미나
+    /// </summary>
+    private float _jumpStaminaDecrease = 10f;
+
     [SerializeField] private CharacterController _characterController;
     [SerializeField] private float _moveSpeedBasic = 7f;
     [SerializeField] private float _moveSpeedIncrease = 12f;
@@ -72,16 +82,19 @@ public class PlayerMove : MonoBehaviour
         {
             _yVelocity = _jumpPower;
             _jumpCount++;
+            Stamina -= _jumpStaminaDecrease;
         }
 
         // 0. 왼쪽 시프트 키를 누르고 있는 동안 이동 속도 변경
         if (Input.GetKey(KeyCode.LeftShift))
         {
             _moveSpeed = _moveSpeedIncrease;
+            Stamina = Mathf.Lerp(Stamina, 0f, Time.deltaTime);
         }
         else
         {
             _moveSpeed = _moveSpeedBasic;
+            Stamina = Mathf.Lerp(Stamina, 100f, Time.deltaTime * 2f);
         }
 
         // 5. 속도를 구한다.
