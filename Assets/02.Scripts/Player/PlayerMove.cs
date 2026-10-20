@@ -32,7 +32,7 @@ public class PlayerMove : MonoBehaviour
     /// <summary>
     /// 스태미나
     /// </summary>
-    private float _stamina = 0f;
+    public float Stamina = 0f;
 
     [Header("컴포넌트")]
     [SerializeField] private CharacterController _characterController;
@@ -43,19 +43,19 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private float _sprintSpeed = 12f;
     [SerializeField] private float _jumpPower = 10f;
     [SerializeField] private float _staminaRecovery = 15f;
-    [SerializeField] private float _sprintCost = 10f;
+    [SerializeField] private float _sprintCost = 35f;
     [SerializeField] private float _jumpCost = 20f;
 
     private void Awake()
     {
         _characterController = GetComponent<CharacterController>();
-        _stamina = MaxStamina;
+        Stamina = MaxStamina;
     }
 
     private void Update()
     {
         // 0. 스태미나 회복
-        _stamina = Mathf.Min(MaxStamina, _stamina + _staminaRecovery * Time.deltaTime);
+        Stamina = Mathf.Min(MaxStamina, Stamina + _staminaRecovery * Time.deltaTime);
 
         // 1. 키보드 입력을 받는다.
         float h = Input.GetAxisRaw("Horizontal"); // -1, 0, 1
@@ -82,21 +82,21 @@ public class PlayerMove : MonoBehaviour
 
         // 4. 만약 점프키를 누르고 점프 카운트가 MaxJumps 이하인 경우, 점프한다.
         // ★ Input.GetButtonDown("Jump") : 중재자 패턴 ★
-        if (Input.GetButtonDown("Jump") && _jumpCount < MaxJumps && _stamina >= _jumpCost)
+        if (Input.GetButtonDown("Jump") && _jumpCount < MaxJumps && Stamina >= _jumpCost)
         {
             _yVelocity = _jumpPower;
             _jumpCount++;
-            _stamina -= _jumpCost;
+            Stamina -= _jumpCost;
         }
 
         // 5. 속도를 구한다.
         float currentSpeed = _moveSpeed;
         float requiredStamina = _sprintCost * Time.deltaTime;
-        bool isSprint = (Input.GetButton("Sprint") && _stamina > requiredStamina);
+        bool isSprint = (Input.GetButton("Sprint") && Stamina > requiredStamina);
         if (isSprint)
         {
             currentSpeed = _sprintSpeed;
-            _stamina -= requiredStamina;
+            Stamina -= requiredStamina;
         }
 
         Vector3 velocity = direction * currentSpeed;
