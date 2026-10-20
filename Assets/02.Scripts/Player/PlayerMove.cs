@@ -9,23 +9,52 @@ public class PlayerMove : MonoBehaviour
     private const float Gravity = -20f;
 
     /// <summary>
+    /// 점프 가능한 최대 횟수
+    /// </summary>
+    private const int MaxJumps = 2;
+
+    /// <summary>
+    /// 최대 스태미나
+    /// </summary>
+    private const float MaxStamina = 100f;
+
+    /// <summary>
     /// 위아래 속도
     /// (매 프레임마다 중력 가속도가 붙음)
     /// </summary>
     private float _yVelocity = 0f;
 
+    /// <summary>
+    /// 점프 횟수
+    /// </summary>
+    private int _jumpCount = 0;
+
+    /// <summary>
+    /// 스태미나
+    /// </summary>
+    private float _stamina = 0f;
+
+    [Header("컴포넌트")]
+    [SerializeField] private CharacterController _characterController;
+
+    [Header("스탯")]
     [SerializeField] private float _moveSpeed = 7f;
+
     [SerializeField] private float _sprintSpeed = 12f;
     [SerializeField] private float _jumpPower = 10f;
-    [SerializeField] private CharacterController _characterController;
+    [SerializeField] private float _staminaRecovery = 15f;
 
     private void Awake()
     {
         _characterController = GetComponent<CharacterController>();
+        _stamina = MaxStamina;
     }
 
     private void Update()
     {
+        // 0. 스태미나 회복
+        _stamina = Mathf.Min(MaxStamina, _stamina + _staminaRecovery * Time.deltaTime);
+
         // 1. 키보드 입력을 받는다.
         float h = Input.GetAxisRaw("Horizontal"); // -1, 0, 1
         float v = Input.GetAxisRaw("Vertical"); // -1, 0, 1
@@ -44,15 +73,17 @@ public class PlayerMove : MonoBehaviour
         }
         else
         {
-            // 땅에 서있으면 중력 초기화
+            // 땅에 서있으면 중력 및 점프 횟수 초기화
             _yVelocity = -1f;
+            _jumpCount = 0;
         }
 
-        // 4. 만약 점프키를 누르고 땅인 경우, 점프한다.
+        // 4. 만약 점프키를 누르고 점프 카운트가 MaxJumps 이하인 경우, 점프한다.
         // ★ Input.GetButtonDown("Jump") : 중재자 패턴 ★
-        if (Input.GetButtonDown("Jump") && _characterController.isGrounded)
+        if (Input.GetButtonDown("Jump") && _jumpCount < MaxJumps)
         {
             _yVelocity = _jumpPower;
+            _jumpCount++;
         }
 
         // 5. 속도를 구한다.
