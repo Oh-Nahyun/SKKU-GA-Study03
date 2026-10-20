@@ -25,7 +25,7 @@ public class CameraRotate : MonoBehaviour
         // 3. 누적하기 전에 내 변수에서 먼저 -90 ~ 90도로 제한
         _accumulationY = Mathf.Clamp(_accumulationY, -90, 90);
 
-        // 4. 누적한 회저값을 카메라에 적용한다.
+        // 4. 누적한 회전값을 카메라에 적용한다.
         transform.eulerAngles = new Vector3(_accumulationY, _accumulationX, 0f);
 
         // // 3. 그 방향으로 회전 시킨다.
