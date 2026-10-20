@@ -11,8 +11,15 @@ public class PlayerGunFire : MonoBehaviour
 
     [SerializeField] private float _damage = 10f; // 공격력
     [SerializeField] private float _fireInterval = 0.1f; // 발사 속도
+    [SerializeField] private int _bulletMaxCount = 50; // 총알 최대 갯수 (탄창)
 
     private float _fireTimer = 0f;
+    public int BulletCount = 0;
+
+    private void Start()
+    {
+        BulletCount = _bulletMaxCount;
+    }
 
     private void Update()
     {
@@ -20,10 +27,15 @@ public class PlayerGunFire : MonoBehaviour
         _fireTimer -= Time.deltaTime;
 
         // 1. 마우스 왼쪽 버튼 입력 받기
-        if (Input.GetButton("Fire1") && _fireTimer <= 0f)
+        if (Input.GetButton("Fire1") && _fireTimer <= 0f && BulletCount > 0)
         {
             _fireTimer = _fireInterval;
             Shoot();
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            Reroll();
         }
     }
 
@@ -51,5 +63,12 @@ public class PlayerGunFire : MonoBehaviour
             //effect.Play(); > 프리팹의 Play On Awake 체크
             //Destroy(effect.gameObject, 2f); > 프리팹의 Stop Action을 Destroy로 설정
         }
+
+        BulletCount--;
+    }
+
+    private void Reroll()
+    {
+        BulletCount = _bulletMaxCount;
     }
 }
