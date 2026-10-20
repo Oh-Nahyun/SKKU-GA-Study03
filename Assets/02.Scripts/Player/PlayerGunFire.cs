@@ -4,11 +4,16 @@ using UnityEngine;
 // 마우스 왼쪽 버튼을 누르면 바라보는 방향으로 총알을 발사하고 싶다.
 public class PlayerGunFire : MonoBehaviour
 {
+    [SerializeField] private ParticleSystem _hitEffectPrefab;
+
     /// <summary>
     /// 사거리
     /// </summary>
     private float _range = 100f;
 
+    /// <summary>
+    /// 데미지
+    /// </summary>
     private float _damage = 10f;
 
     private void Update()
@@ -37,8 +42,12 @@ public class PlayerGunFire : MonoBehaviour
         bool isHit = Physics.Raycast(ray, out hitInfo, _range);
         if (isHit)
         {
-            Debug.Log($"{hitInfo.collider.name}이 총알을 맞았다. 데미지 : {_damage}");
-            // TODO : 이펙트 생성
+            // Debug.Log($"{hitInfo.collider.name}이 총알을 맞았다. 데미지 : {_damage}");
+            ParticleSystem effect = Instantiate(_hitEffectPrefab);
+            effect.transform.position = hitInfo.point; // 맞은 자리
+            effect.transform.forward = hitInfo.normal; // 수직 위치로 회전 (법선 벡터)
+            //effect.Play(); > 프리팹의 Play On Awake 체크
+            //Destroy(effect.gameObject, 2f); > 프리팹의 Stop Action을 Destroy로 설정
         }
     }
 }
