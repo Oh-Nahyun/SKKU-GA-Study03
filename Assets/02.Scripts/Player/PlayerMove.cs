@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -9,18 +10,35 @@ public class PlayerMove : MonoBehaviour
     private const float Gravity = -20f;
 
     /// <summary>
+    /// 이동 속도
+    /// </summary>
+    private float _moveSpeed;
+
+    /// <summary>
     /// 위아래 속도
     /// (매 프레임마다 중력 가속도가 붙음)
     /// </summary>
     private float _yVelocity = 0f;
 
-    [SerializeField] private float _moveSpeed = 7f;
-    [SerializeField] private float _jumpPower = 10f;
+    /// <summary>
+    /// 점프 횟수
+    /// </summary>
+    private int _jumpCount = 0;
+
     [SerializeField] private CharacterController _characterController;
+    [SerializeField] private float _moveSpeedBasic = 7f;
+    [SerializeField] private float _moveSpeedIncrease = 12f;
+    [SerializeField] private float _jumpPower = 10f;
+    [SerializeField] private int _jumpMaxCount = 1;
 
     private void Awake()
     {
         _characterController = GetComponent<CharacterController>();
+    }
+
+    private void Start()
+    {
+        _moveSpeed = _moveSpeedBasic;
     }
 
     private void Update()
@@ -45,13 +63,25 @@ public class PlayerMove : MonoBehaviour
         {
             // 땅에 서있으면 중력 초기화
             _yVelocity = 0f;
+            _jumpCount = 0;
         }
 
         // 4. 만약 점프키를 누르고 땅인 경우, 점프한다.
         // ★ Input.GetButtonDown("Jump") : 중재자 패턴 ★
-        if (Input.GetButtonDown("Jump") && _characterController.isGrounded)
+        if (Input.GetButtonDown("Jump") && (_characterController.isGrounded || _jumpCount <= _jumpMaxCount))
         {
             _yVelocity = _jumpPower;
+            _jumpCount++;
+        }
+
+        // 0. 왼쪽 시프트 키를 누르고 있는 동안 이동 속도 변경
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            _moveSpeed = _moveSpeedIncrease;
+        }
+        else
+        {
+            _moveSpeed = _moveSpeedBasic;
         }
 
         // 5. 속도를 구한다.
