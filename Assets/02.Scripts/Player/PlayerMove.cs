@@ -43,6 +43,8 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private float _sprintSpeed = 12f;
     [SerializeField] private float _jumpPower = 10f;
     [SerializeField] private float _staminaRecovery = 15f;
+    [SerializeField] private float _sprintCost = 10f;
+    [SerializeField] private float _jumpCost = 20f;
 
     private void Awake()
     {
@@ -80,14 +82,23 @@ public class PlayerMove : MonoBehaviour
 
         // 4. 만약 점프키를 누르고 점프 카운트가 MaxJumps 이하인 경우, 점프한다.
         // ★ Input.GetButtonDown("Jump") : 중재자 패턴 ★
-        if (Input.GetButtonDown("Jump") && _jumpCount < MaxJumps)
+        if (Input.GetButtonDown("Jump") && _jumpCount < MaxJumps && _stamina >= _jumpCost)
         {
             _yVelocity = _jumpPower;
             _jumpCount++;
+            _stamina -= _jumpCost;
         }
 
         // 5. 속도를 구한다.
-        float currentSpeed = (Input.GetButton("Sprint")) ? _sprintSpeed : _moveSpeed;
+        float currentSpeed = _moveSpeed;
+        float requiredStamina = _sprintCost * Time.deltaTime;
+        bool isSprint = (Input.GetButton("Sprint") && _stamina > requiredStamina);
+        if (isSprint)
+        {
+            currentSpeed = _sprintSpeed;
+            _stamina -= requiredStamina;
+        }
+
         Vector3 velocity = direction * currentSpeed;
         velocity.y = _yVelocity;
 
