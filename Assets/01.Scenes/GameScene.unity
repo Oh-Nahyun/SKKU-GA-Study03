@@ -743,7 +743,8 @@ MonoBehaviour:
   _range: 100
   _damage: 10
   _fireInterval: 0.1
-  _bulletMaxCount: 50
+  _maxBulletCount: 30
+  _rerollTime: 3
   BulletCount: 0
 --- !u!114 &394931073
 MonoBehaviour:

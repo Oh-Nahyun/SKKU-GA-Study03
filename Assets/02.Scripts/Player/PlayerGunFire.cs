@@ -11,14 +11,17 @@ public class PlayerGunFire : MonoBehaviour
 
     [SerializeField] private float _damage = 10f; // 공격력
     [SerializeField] private float _fireInterval = 0.1f; // 발사 속도
-    [SerializeField] private int _bulletMaxCount = 50; // 총알 최대 갯수 (탄창)
+    [SerializeField] private int _maxBulletCount = 30; // 총알 최대 갯수 (탄창)
+    [SerializeField] private float _rerollTime = 3f; // 총알 장전 시간
 
     private float _fireTimer = 0f;
     public int BulletCount = 0;
+    private bool _isReroll = false;
+    private float _rerollTimer = 0f;
 
     private void Start()
     {
-        BulletCount = _bulletMaxCount;
+        BulletCount = _maxBulletCount;
     }
 
     private void Update()
@@ -30,12 +33,26 @@ public class PlayerGunFire : MonoBehaviour
         if (Input.GetButton("Fire1") && _fireTimer <= 0f && BulletCount > 0)
         {
             _fireTimer = _fireInterval;
+            BulletCount--;
             Shoot();
         }
 
-        if (Input.GetKeyDown(KeyCode.R))
+        // 2. R키 누르면 총알 재장전 시작
+        if (Input.GetButtonDown("Reroll") && _isReroll == false)
         {
-            Reroll();
+            _isReroll = true;
+            _rerollTimer = 0f;
+        }
+
+        // 3. 총알 재장전 중
+        if (_isReroll) // 재장전 중이라면..
+        {
+            _rerollTimer += Time.deltaTime;
+            if (_rerollTimer > _rerollTime) // 재장전 시간이 지났다면..
+            {
+                _isReroll = false;
+                Reroll();
+            }
         }
     }
 
@@ -63,12 +80,10 @@ public class PlayerGunFire : MonoBehaviour
             //effect.Play(); > 프리팹의 Play On Awake 체크
             //Destroy(effect.gameObject, 2f); > 프리팹의 Stop Action을 Destroy로 설정
         }
-
-        BulletCount--;
     }
 
     private void Reroll()
     {
-        BulletCount = _bulletMaxCount;
+        BulletCount = _maxBulletCount;
     }
 }
