@@ -5,7 +5,6 @@ using UnityEngine;
 public class PlayerBombFire : MonoBehaviour
 {
     [SerializeField] private Transform _firePoint;
-    [SerializeField] private Bomb _bombPrefab;
     [SerializeField] private float _throwPower = 15f;
     [SerializeField] private int _bombMaxCount = 10;
 
@@ -29,10 +28,17 @@ public class PlayerBombFire : MonoBehaviour
     private void Shoot()
     {
         // 2. 발사 위치에서 수류탄 생성하기
-        Bomb bomb = Instantiate(_bombPrefab, _firePoint.position, Quaternion.identity);
+        Bomb bomb = BombPool.Instance.GetBomb();
+
+        if (bomb == null) return;
+
+        bomb.transform.position = _firePoint.position;
+        bomb.transform.rotation = Quaternion.identity;
 
         // 3. 생성된 수류탄을 시선 방향으로 던지기
         Rigidbody rigidbody = bomb.GetComponent<Rigidbody>();
+        rigidbody.linearVelocity = Vector3.zero;
+        rigidbody.angularVelocity = Vector3.zero;
         rigidbody.AddForce(Camera.main.transform.forward * _throwPower * _timer, ForceMode.Impulse);
 
         _bombCount++;

@@ -13,6 +13,6 @@ public class Bomb : MonoBehaviour
         effect.Play();
 
         // TODO : 오브젝트 풀링 적용
-        Destroy(gameObject);
+        gameObject.SetActive(false);
     }
 }
