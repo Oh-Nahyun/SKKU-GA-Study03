@@ -16,18 +16,15 @@ public class PlayerGunFire : MonoBehaviour
     [SerializeField] private float _rerollTime = 3f; // 총알 장전 시간
 
     private float _fireTimer = 0f;
-
     public int BulletCount = 0;
-
-    //private Coroutine _rerollCoroutine = null;
-    private Awaitable _rerollCoroutine = null;
+    private Coroutine _rerollCoroutine = null;
 
     private void Start()
     {
         BulletCount = _maxBulletCount;
     }
 
-    private async void Update()
+    private void Update()
     {
         // 0. 발사 타이머를 지난 시간만큼 줄인다.
         _fireTimer -= Time.deltaTime;
@@ -42,19 +39,16 @@ public class PlayerGunFire : MonoBehaviour
             if (_rerollCoroutine != null)
             {
                 //StopAllCoroutines(); // 이 방식은 이 모노비헤이비어가 등록한 모든 코루틴을 실행 취소
-                //StopCoroutine(_rerollCoroutine);
-                _rerollCoroutine.Cancel();
+                StopCoroutine(_rerollCoroutine);
                 _rerollCoroutine = null;
                 Debug.Log("재장전 취소!");
             }
         }
 
         // 2. R키 누르면 총알 재장전 시작
-        if (Input.GetButtonDown("Reroll") && _rerollCoroutine == null)
+        if (Input.GetButtonDown("Reroll"))
         {
-            //_rerollCoroutine = StartCoroutine(Reroll_Coroutine());
-            _rerollCoroutine = Reroll_Async();
-            Debug.Log("재장전 진짜 완료!");
+            _rerollCoroutine = StartCoroutine(Reroll_Coroutine());
         }
     }
 
@@ -84,13 +78,11 @@ public class PlayerGunFire : MonoBehaviour
         }
     }
 
-    //private IEnumerator Reroll_Coroutine()
-    private async Awaitable Reroll_Async()
+    private IEnumerator Reroll_Coroutine()
     {
         Debug.Log("재장전 시작!");
 
-        //yield return new WaitForSeconds(_rerollTime);
-        await Awaitable.WaitForSecondsAsync(_rerollTime);
+        yield return new WaitForSeconds(_rerollTime);
 
         BulletCount = _maxBulletCount;
         _rerollCoroutine = null;
