@@ -17,6 +17,7 @@ public class PlayerGunFire : MonoBehaviour
 
     private float _fireTimer = 0f;
     public int BulletCount = 0;
+    private Coroutine _rerollCoroutine = null;
 
     private void Start()
     {
@@ -34,12 +35,20 @@ public class PlayerGunFire : MonoBehaviour
             _fireTimer = _fireInterval;
             BulletCount--;
             Shoot();
+
+            if (_rerollCoroutine != null)
+            {
+                //StopAllCoroutines(); // 이 방식은 이 모노비헤이비어가 등록한 모든 코루틴을 실행 취소
+                StopCoroutine(_rerollCoroutine);
+                _rerollCoroutine = null;
+                Debug.Log("재장전 취소!");
+            }
         }
 
         // 2. R키 누르면 총알 재장전 시작
         if (Input.GetButtonDown("Reroll"))
         {
-            StartCoroutine(Reroll_Coroutine());
+            _rerollCoroutine = StartCoroutine(Reroll_Coroutine());
         }
     }
 
@@ -76,6 +85,7 @@ public class PlayerGunFire : MonoBehaviour
         yield return new WaitForSeconds(_rerollTime);
 
         BulletCount = _maxBulletCount;
+        _rerollCoroutine = null;
 
         Debug.Log("재장전 완료!");
     }
