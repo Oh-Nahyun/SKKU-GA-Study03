@@ -7,11 +7,20 @@ public class PlayerBombFire : MonoBehaviour
     [SerializeField] private Transform _firePoint;
     [SerializeField] private Bomb _bombPrefab;
     [SerializeField] private float _throwPower = 15f;
+    [SerializeField] private int _bombMaxCount = 10;
+
+    private int _bombCount = 0;
+    private float _timer = 0f;
 
     private void Update()
     {
+        if (Input.GetButton("Fire2"))
+        {
+            _timer += Time.deltaTime;
+        }
+
         // 1. 마우스 오른쪽 버튼 입력 받기
-        if (Input.GetButtonDown("Fire2"))
+        if (Input.GetButtonUp("Fire2") && _bombCount < _bombMaxCount)
         {
             Shoot();
         }
@@ -24,6 +33,9 @@ public class PlayerBombFire : MonoBehaviour
 
         // 3. 생성된 수류탄을 시선 방향으로 던지기
         Rigidbody rigidbody = bomb.GetComponent<Rigidbody>();
-        rigidbody.AddForce(Camera.main.transform.forward * _throwPower, ForceMode.Impulse);
+        rigidbody.AddForce(Camera.main.transform.forward * _throwPower * _timer, ForceMode.Impulse);
+
+        _bombCount++;
+        _timer = 0f;
     }
 }
