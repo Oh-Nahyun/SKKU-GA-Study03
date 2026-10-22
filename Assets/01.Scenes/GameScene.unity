@@ -2302,6 +2302,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Zombie
   _detectDistance: 8
+  _combackDistance: 15
   _moveSpeed: 5
 --- !u!1 &2000840320
 GameObject:
