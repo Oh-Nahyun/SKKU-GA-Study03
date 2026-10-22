@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.AdaptivePerformance.Provider;
@@ -18,7 +19,8 @@ public enum ZombieState
     Comeback,
     Attack,
     Hit,
-    Death
+    Death,
+    Patrol
 }
 
 public class Zombie : MonoBehaviour
@@ -31,12 +33,14 @@ public class Zombie : MonoBehaviour
     [SerializeField] private float _attackInterval = 1.2f; // 공격 간격
     [SerializeField] private float _moveSpeed = 5f; // 이동속도
     [SerializeField] private float _health = 30f;
+    [SerializeField] private List<Transform> _patrolTransform;
 
     private CharacterController _controller;
     private Vector3 _startPosition;
     private GameObject _player;
-    private ZombieState _state = ZombieState.Idle;
+    private ZombieState _state = ZombieState.Patrol;
     private float _attackTimer = 0f;
+    private int _patrolIndex = 0;
 
     private void Start()
     {
@@ -67,6 +71,11 @@ public class Zombie : MonoBehaviour
             case ZombieState.Attack:
                 {
                     Attack();
+                    break;
+                }
+            case ZombieState.Patrol:
+                {
+                    Patrol();
                     break;
                 }
         }
@@ -122,8 +131,11 @@ public class Zombie : MonoBehaviour
         // 처음 자리에 도착하면 Idle 상태가 된다.
         if (Vector3.Distance(transform.position, _startPosition) < 1f)
         {
-            Debug.Log($"{_state} -> Idle");
-            _state = ZombieState.Idle;
+            // Debug.Log($"{_state} -> Idle");
+            // _state = ZombieState.Idle;
+
+            Debug.Log($"{_state} -> Patrol");
+            _state = ZombieState.Patrol;
             return;
         }
 
@@ -144,6 +156,7 @@ public class Zombie : MonoBehaviour
         {
             Debug.Log($"{_state} -> Trace");
             _state = ZombieState.Trace;
+            return;
         }
 
         _attackTimer += Time.deltaTime;
@@ -195,5 +208,37 @@ public class Zombie : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);
         Destroy(gameObject);
+    }
+
+    private void Patrol()
+    {
+        if (_patrolTransform == null || _patrolTransform.Count == 0) return;
+
+        // 플레이어 발견 시 추격
+        if (Vector3.Distance(transform.position, _player.transform.position) <= _detectDistance)
+        {
+            _startPosition = transform.position;
+
+            Debug.Log($"{_state} -> Trace");
+            _state = ZombieState.Trace;
+            return;
+        }
+
+        // 현재 순찰 지점
+        Transform point = _patrolTransform[_patrolIndex];
+        Vector3 direction = point.position - transform.position;
+        direction.y = 0f;
+
+        // 순찰 지점에 도착
+        if (direction.magnitude <= 0.5f)
+        {
+            // 다음 순찰 지점으로 변경
+            _patrolIndex = (_patrolIndex + 1) % _patrolTransform.Count;
+            return;
+        }
+
+        direction.Normalize();
+        transform.forward = direction;
+        _controller.SimpleMove(direction * _moveSpeed);
     }
 }
