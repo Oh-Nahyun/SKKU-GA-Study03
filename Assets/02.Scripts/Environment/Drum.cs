@@ -13,6 +13,9 @@ public class Drum : MonoBehaviour
     [SerializeField] private float _launchPower = 20f;
     [SerializeField] private float _spinPower = 5f;
     [SerializeField] private float _destroyDelay = 3f;
+    [SerializeField] private float _explosionRange = 4.5f;
+    [SerializeField] private float _damage = 100f;
+    [SerializeField] private float _explosionDelay = 0.1f;
 
     private Rigidbody _rigidbody;
 
@@ -38,6 +41,9 @@ public class Drum : MonoBehaviour
 
     private IEnumerator Explode_Coroutine()
     {
+        // 0. 폭발하기 전에 대기한다.
+        yield return new WaitForSeconds(_explosionDelay);
+
         // 1. 폭발 이펙트를 생성한다.
         ParticleSystem effect = Instantiate(_explosionEffectPrefab, transform.position, Quaternion.identity);
         effect.Play();
@@ -46,8 +52,26 @@ public class Drum : MonoBehaviour
         _rigidbody.AddForce(Vector3.up * _launchPower, ForceMode.Impulse);
         _rigidbody.AddTorque(UnityEngine.Random.insideUnitSphere * _spinPower, ForceMode.Impulse);
 
-        // 3. 사라진다.
+        // 3. 주위에 폭발을 전달한다. (데미지를 준다.)
+        ApplyAreaDamage();
+
+        // 4. 사라진다.
         yield return new WaitForSeconds(_destroyDelay);
         Destroy(gameObject);
+    }
+
+    private void ApplyAreaDamage()
+    {
+        // 0. 주위에 있는 드럼통들을 모두 찾는다.
+        // Physics.OverlapSphere(원점, 반지름, 찾을 레이어들)
+        Collider[] colliders =
+            Physics.OverlapSphere(transform.position, _explosionRange, LayerMask.GetMask("Drum", "Zombie"));
+
+        // 1. 드럼통과 좀비들에게 데미지를 준다.
+        foreach (Collider col in colliders)
+        {
+            col.GetComponent<Drum>()?.Damage(_damage);
+            col.GetComponent<Zombie>()?.TakeDamage(_damage);
+        }
     }
 }
