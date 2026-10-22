@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public class CoroutineTest : MonoBehaviour
+public class CoroutineExample : MonoBehaviour
 {
     // public int _score = 0;
     // private int UnusedField = 0;
