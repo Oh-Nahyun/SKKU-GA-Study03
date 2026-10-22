@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.AdaptivePerformance.Provider;
@@ -16,8 +17,8 @@ public enum ZombieState
     Trace,
     Comeback,
     Attack,
-    Hit, // 피격 : 공격(총알, 폭탄)을 받아 잠깐 멈칫한다.
-    Death // 죽음 : 쓰러지고 잠시 뒤 사라진다.
+    Hit,
+    Death
 }
 
 public class Zombie : MonoBehaviour
@@ -29,6 +30,7 @@ public class Zombie : MonoBehaviour
     [SerializeField] private float _attackRange = 1.5f; // 공격 범위
     [SerializeField] private float _attackInterval = 1.2f; // 공격 간격
     [SerializeField] private float _moveSpeed = 5f; // 이동속도
+    [SerializeField] private float _health = 30f;
 
     private CharacterController _controller;
     private Vector3 _startPosition;
@@ -65,16 +67,6 @@ public class Zombie : MonoBehaviour
             case ZombieState.Attack:
                 {
                     Attack();
-                    break;
-                }
-            case ZombieState.Hit:
-                {
-                    Hit();
-                    break;
-                }
-            case ZombieState.Death:
-                {
-                    Death();
                     break;
                 }
         }
@@ -165,11 +157,43 @@ public class Zombie : MonoBehaviour
         }
     }
 
-    private void Hit()
+    public void TakeDamage(float damage)
     {
+        if (_state == ZombieState.Death)
+        {
+            return;
+        }
+
+        _health -= damage;
+        StopAllCoroutines();
+        if (_health > 0f)
+        {
+            // 피격 : 공격(총알, 폭탄)을 받아 데미지를 받고 잠깐 멈칫한다.
+            Debug.Log($"{_state} -> Hit");
+            _state = ZombieState.Hit;
+            StartCoroutine(Hit_Coroutine());
+        }
+        else
+        {
+            // 죽음 : 쓰러지고 잠시 뒤 사라진다.
+            Debug.Log($"{_state} -> Death");
+            _state = ZombieState.Death;
+            StartCoroutine(Death_Coroutine());
+        }
     }
 
-    private void Death()
+    private IEnumerator Hit_Coroutine()
     {
+        yield return new WaitForSeconds(0.3f);
+
+        // 맞았으니 쫓아온다.
+        Debug.Log($"{_state} -> Trace");
+        _state = ZombieState.Trace;
+    }
+
+    private IEnumerator Death_Coroutine()
+    {
+        yield return new WaitForSeconds(0.5f);
+        Destroy(gameObject);
     }
 }

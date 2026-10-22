@@ -69,12 +69,19 @@ public class PlayerGunFire : MonoBehaviour
         bool isHit = Physics.Raycast(ray, out hitInfo, _range);
         if (isHit)
         {
+            // 맞은 자리에 총알 자국 이펙트 만들기
             // Debug.Log($"{hitInfo.collider.name}이 총알을 맞았다. 데미지 : {_damage}");
             ParticleSystem effect = Instantiate(_hitEffectPrefab);
             effect.transform.position = hitInfo.point; // 맞은 자리
             effect.transform.forward = hitInfo.normal; // 수직 위치로 회전 (법선 벡터)
             //effect.Play(); > 프리팹의 Play On Awake 체크
             //Destroy(effect.gameObject, 2f); > 프리팹의 Stop Action을 Destroy로 설정
+
+            // 맞은 대상이 좀비라면 TakeDamage
+            if (hitInfo.collider.TryGetComponent(out Zombie zombie))
+            {
+                zombie.TakeDamage(_damage);
+            }
         }
     }
 
