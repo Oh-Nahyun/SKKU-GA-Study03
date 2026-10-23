@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour, IDamageable
 {
+    [SerializeField] private UI_HitEffect _uiHitEffect;
+
     /// <summary>
     /// 체력
     /// </summary>
@@ -25,6 +27,7 @@ public class Player : MonoBehaviour, IDamageable
         if (_health <= 0f) return;
 
         _health -= damageInfo.Value;
+        _uiHitEffect.Fade(0.4f);
 
         Debug.Log($"플레이어가 맞았다. 데미지 {damageInfo.Value}, 남은 체력 {_health}");
         if (_health <= 0f)
