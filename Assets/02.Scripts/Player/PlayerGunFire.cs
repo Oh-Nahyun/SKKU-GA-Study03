@@ -77,14 +77,20 @@ public class PlayerGunFire : MonoBehaviour
             //effect.Play(); > 프리팹의 Play On Awake 체크
             //Destroy(effect.gameObject, 2f); > 프리팹의 Stop Action을 Destroy로 설정
 
-            // 맞은 대상이 좀비라면 TakeDamage
-            if (hitInfo.collider.TryGetComponent(out Zombie zombie))
-            {
-                zombie.TakeDamage(_damage);
-            }
+            // // 맞은 대상이 좀비라면 TakeDamage
+            // if (hitInfo.collider.TryGetComponent(out Zombie zombie))
+            // {
+            //     zombie.TakeDamage(_damage);
+            // }
+            // hitInfo.collider.GetComponent<Drum>()?.TakeDamage(_damage);
+            // hitInfo.collider.GetComponent<Box>()?.TakeDamage(_damage);
 
-            hitInfo.collider.GetComponent<Drum>()?.TakeDamage(_damage);
-            hitInfo.collider.GetComponent<Box>()?.TakeDamage(_damage);
+            // 데미지 구조체 만들기
+            DamageInfo damageInfo = new DamageInfo();
+            damageInfo.Value = _damage;
+            damageInfo.HitPoint = hitInfo.point;
+            damageInfo.HitNormal = hitInfo.normal;
+            hitInfo.collider.GetComponent<IDamageable>()?.TakeDamage(damageInfo);
         }
     }
 

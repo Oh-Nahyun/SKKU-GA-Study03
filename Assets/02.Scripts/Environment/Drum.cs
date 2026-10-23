@@ -24,14 +24,14 @@ public class Drum : MonoBehaviour, IDamageable
         _rigidbody = GetComponent<Rigidbody>();
     }
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(DamageInfo damageInfo)
     {
         if (_health <= 0f)
         {
             return;
         }
 
-        _health -= damage;
+        _health -= damageInfo.Value;
 
         if (_health <= 0f)
         {
@@ -70,8 +70,16 @@ public class Drum : MonoBehaviour, IDamageable
         // 1. 드럼통과 좀비들에게 데미지를 준다.
         foreach (Collider col in colliders)
         {
-            col.GetComponent<Drum>()?.TakeDamage(_damage);
-            col.GetComponent<Zombie>()?.TakeDamage(_damage);
+            // col.GetComponent<Drum>()?.TakeDamage(_damage);
+            // col.GetComponent<Zombie>()?.TakeDamage(_damage);
+
+            DamageInfo damageInfo = new()
+            {
+                Value = _damage,
+                HitPoint = col.ClosestPoint(transform.position), // 폭발 중심에서 가장 가까운 콜라이더 표면 위치
+                HitNormal = (transform.position - col.ClosestPoint(transform.position)).normalized
+            };
+            col.GetComponent<IDamageable>()?.TakeDamage(damageInfo);
         }
     }
 }
