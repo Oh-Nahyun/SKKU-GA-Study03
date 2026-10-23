@@ -215,7 +215,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 0}
   m_FillRect: {fileID: 6352753255137561217}
   m_HandleRect: {fileID: 0}
@@ -360,6 +360,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Zombie
   _detectDistance: 8
   _comebackDistance: 15
+  _attackDamage: 10
   _attackRange: 1.5
   _attackInterval: 1.2
   _moveSpeed: 5
