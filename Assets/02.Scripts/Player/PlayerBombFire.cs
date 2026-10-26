@@ -21,7 +21,8 @@ public class PlayerBombFire : MonoBehaviour
         }
 
         // 1. 마우스 오른쪽 버튼 입력 받기
-        if (Input.GetButtonUp("Fire2") && _bombCount < _bombMaxCount)
+        bool isMouseVisible = Cursor.visible;
+        if (!isMouseVisible && Input.GetButtonUp("Fire2") && _bombCount < _bombMaxCount)
         {
             Shoot();
         }
