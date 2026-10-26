@@ -46,6 +46,9 @@ public class Zombie : MonoBehaviour, IDamageable
     public float MaxHealth => _maxhealth;
     public float Health => _health;
 
+    // 체력이 변할 때마다 구독 중인 UI(체력바 등)에게 알린다.
+    public event Action OnDamaged = null;
+
     private void Start()
     {
         _health = _maxhealth;
@@ -181,6 +184,7 @@ public class Zombie : MonoBehaviour, IDamageable
         }
 
         _health -= damageInfo.Value;
+        OnDamaged?.Invoke();
         StopAllCoroutines();
         if (_health > 0f)
         {
