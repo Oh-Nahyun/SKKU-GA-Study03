@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +15,20 @@ public class UI_HitEffect : MonoBehaviour
     {
         _image = GetComponent<Image>();
         _image.enabled = false;
+    }
+
+    private void Start()
+    {
+        Player player = GameObject.FindAnyObjectByType<Player>();
+        if (player != null)
+        {
+            player.OnDamaged += OnPlayerDamaged;
+        }
+    }
+
+    private void OnPlayerDamaged()
+    {
+        Fade(0.4f);
     }
 
     public void Flash(float alpha)
