@@ -17,11 +17,11 @@ public class MinimapCamera : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
-            _camera.orthographicSize -= 1;
+            ZoomIn();
         }
         else if (Input.GetKeyDown(KeyCode.Alpha9))
         {
-            _camera.orthographicSize += 1;
+            ZoomOut();
         }
     }
 
@@ -32,5 +32,16 @@ public class MinimapCamera : MonoBehaviour
 
         // 2. 아래를 보되, 대상이 쳐다보는 방향으로 카메라도 회전한다.
         transform.eulerAngles = new Vector3(90f, _target.eulerAngles.y, 0f);
+    }
+
+    // TODO : ZoomIn/ZoomOut 함수로 분리하기
+    public void ZoomIn()
+    {
+        _camera.orthographicSize -= 1;
+    }
+
+    public void ZoomOut()
+    {
+        _camera.orthographicSize += 1;
     }
 }
