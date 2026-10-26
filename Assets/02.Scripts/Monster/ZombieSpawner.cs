@@ -6,9 +6,6 @@ using UnityEngine;
 // - 좀비를 처치할 때마다 이벤트로 알린다. (UI 등이 구독)
 public class ZombieSpawner : MonoBehaviour
 {
-    [Header("좀비 프리팹")]
-    [SerializeField] private Zombie _zombiePrefab;
-
     [Header("스폰 설정")]
     [SerializeField] private Transform[] _spawnPoints; // 비어 있으면 스포너 자신의 위치에서 생성한다.
 
@@ -37,21 +34,24 @@ public class ZombieSpawner : MonoBehaviour
         if (_spawnedZombieCount >= _maxZombieCount) return;
 
         _spawnTimer += Time.deltaTime;
-        if (_spawnTimer >= _spawnInterval)
+        if (_spawnTimer >= _spawnInterval && TrySpawn())
         {
             _spawnTimer = 0f;
-            Spawn();
         }
     }
 
-    private void Spawn()
+    private bool TrySpawn()
     {
         Transform spawnPoint = GetRandomSpawnPoint();
 
-        Zombie zombie = Instantiate(_zombiePrefab, spawnPoint.position, spawnPoint.rotation);
+        // 풀에 쓸 수 있는 좀비가 없으면 이번에는 생성하지 않고, 다음 프레임에 다시 시도한다.
+        Zombie zombie = ZombiePool.Instance.GetZombie(spawnPoint.position, spawnPoint.rotation);
+        if (zombie == null) return false;
+
         zombie.OnDied += HandleZombieDied;
 
         _spawnedZombieCount++;
+        return true;
     }
 
     private Transform GetRandomSpawnPoint()

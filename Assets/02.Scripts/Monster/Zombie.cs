@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.AdaptivePerformance.Provider;
@@ -43,6 +44,9 @@ public class Zombie : MonoBehaviour, IDamageable
     private ZombieState _state = ZombieState.Idle;
     private float _attackTimer = 0f;
 
+    // 좀비의 자식으로 생성한 피 스프레이들 (풀로 돌아갈 때 정리하기 위해 기억해 둔다)
+    private readonly List<GameObject> _bloodSprays = new();
+
     public float MaxHealth => _maxhealth;
     public float Health => _health;
 
@@ -52,11 +56,16 @@ public class Zombie : MonoBehaviour, IDamageable
     // 좀비가 죽는 순간 구독 중인 대상(스포너 등)에게 알린다.
     public event Action<Zombie> OnDied = null;
 
+    private void OnEnable()
+    {
+        // 풀에서 꺼낼 때마다 새로 배치된 자리가 "처음 자리"가 된다.
+        _startPosition = transform.position;
+    }
+
     private void Start()
     {
         _health = _maxhealth;
         _controller = GetComponent<CharacterController>();
-        _startPosition = transform.position;
         _player = GameObject.FindGameObjectWithTag("Player");
     }
 
@@ -197,6 +206,7 @@ public class Zombie : MonoBehaviour, IDamageable
             //bloodSpray.transform.SetParent(transform);
             bloodSpray.transform.position = damageInfo.HitPoint;
             bloodSpray.transform.forward = damageInfo.HitNormal;
+            _bloodSprays.Add(bloodSpray);
 
             // 피격 : 공격(총알, 폭탄)을 받아 데미지를 받고 잠깐 멈칫한다.
             Debug.Log($"{_state} -> Hit");
@@ -225,6 +235,23 @@ public class Zombie : MonoBehaviour, IDamageable
     private IEnumerator Death_Coroutine()
     {
         yield return new WaitForSeconds(0.5f);
-        Destroy(gameObject);
+        ReturnToPool();
+    }
+
+    // 파괴하지 않고, 다음에 다시 쓸 수 있게 상태를 되돌린 뒤 비활성화한다.
+    private void ReturnToPool()
+    {
+        // 아직 남아 있는 피 스프레이는 비활성화되면 스스로 사라지지 못하므로 직접 정리한다.
+        foreach (GameObject bloodSpray in _bloodSprays)
+        {
+            Destroy(bloodSpray);
+        }
+        _bloodSprays.Clear();
+
+        _health = _maxhealth;
+        _state = ZombieState.Idle;
+        _attackTimer = 0f;
+
+        gameObject.SetActive(false);
     }
 }
