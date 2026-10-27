@@ -43,6 +43,7 @@ public class Zombie : MonoBehaviour, IDamageable
     private GameObject _player;
     private ZombieState _state = ZombieState.Idle;
     private float _attackTimer = 0f;
+    private Animator _animator;
 
     /// <summary>
     /// 길을 찾아 걷게 해주는 NavMeshAgent 컴포넌트
@@ -74,6 +75,7 @@ public class Zombie : MonoBehaviour, IDamageable
         _player = GameObject.FindGameObjectWithTag("Player");
         _agent = GetComponent<NavMeshAgent>();
         _agent.speed = _moveSpeed;
+        _animator = GetComponentInChildren<Animator>();
     }
 
     private void Update()
@@ -107,8 +109,6 @@ public class Zombie : MonoBehaviour, IDamageable
 
     private void Idle()
     {
-        // TODO : Idle 애니메이션 실행
-
         StopAgent();
 
         // 대기 : 제자리에서 플레이어를 기다린다.
@@ -117,14 +117,13 @@ public class Zombie : MonoBehaviour, IDamageable
         if (distance <= _detectDistance)
         {
             Debug.Log($"{_state} -> Trace");
+            _animator.SetTrigger("IdleToMove");
             _state = ZombieState.Trace;
         }
     }
 
     private void Trace()
     {
-        // TODO : Trace 애니메이션 실행
-
         // 처음 자리에서 너무 멀어지면 돌아간다.
         if (Vector3.Distance(transform.position, _startPosition) > _comebackDistance)
         {
@@ -138,6 +137,7 @@ public class Zombie : MonoBehaviour, IDamageable
         {
             _attackTimer = 0f;
             Debug.Log($"{_state} -> Attack");
+            _animator.SetTrigger("MoveToAttackDelay");
             _state = ZombieState.Attack;
             return;
         }
@@ -165,6 +165,7 @@ public class Zombie : MonoBehaviour, IDamageable
         if (Vector3.Distance(transform.position, _startPosition) < _agent.stoppingDistance)
         {
             Debug.Log($"{_state} -> Idle");
+            _animator.SetTrigger("MoveToIdle");
             _state = ZombieState.Idle;
             return;
         }
@@ -189,23 +190,28 @@ public class Zombie : MonoBehaviour, IDamageable
         if (distance > _attackRange)
         {
             Debug.Log($"{_state} -> Trace");
+            _animator.SetTrigger("AttackMove");
             _state = ZombieState.Trace;
         }
 
         _attackTimer += Time.deltaTime;
         if (_attackTimer >= _attackInterval)
         {
-            // TODO : 공격 애니메이션 실행
-            // 공격 : 일정 시간마다 플레이어를 때린다.
-            DamageInfo damageInfo = new DamageInfo()
-            {
-                Value = _attackDamage,
-                HitPoint = _player.transform.position,
-                HitNormal = (transform.position - _player.transform.position).normalized
-            };
-            _player.GetComponent<IDamageable>()?.TakeDamage(damageInfo);
+            _animator.SetTrigger("StartAttack");
             _attackTimer = 0f;
         }
+    }
+
+    public void AttackAction()
+    {
+        // 공격 : 일정 시간마다 플레이어를 때린다.
+        DamageInfo damageInfo = new DamageInfo()
+        {
+            Value = _attackDamage,
+            HitPoint = _player.transform.position,
+            HitNormal = (transform.position - _player.transform.position).normalized
+        };
+        _player.GetComponent<IDamageable>()?.TakeDamage(damageInfo);
     }
 
     public void TakeDamage(DamageInfo damageInfo)
@@ -237,6 +243,7 @@ public class Zombie : MonoBehaviour, IDamageable
         {
             // 죽음 : 쓰러지고 잠시 뒤 사라진다.
             Debug.Log($"{_state} -> Death");
+            _animator.SetTrigger("Death");
             _state = ZombieState.Death;
             OnDied?.Invoke(this);
             StartCoroutine(Death_Coroutine());
@@ -256,7 +263,7 @@ public class Zombie : MonoBehaviour, IDamageable
     private IEnumerator Death_Coroutine()
     {
         StopAgent();
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(2f);
         ReturnToPool();
     }
 
