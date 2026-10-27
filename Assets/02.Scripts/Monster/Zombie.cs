@@ -245,8 +245,8 @@ public class Zombie : MonoBehaviour, IDamageable
 
     private IEnumerator Hit_Coroutine()
     {
-        yield return new WaitForSeconds(0.3f);
         StopAgent();
+        yield return new WaitForSeconds(0.3f);
 
         // 맞았으니 쫓아온다.
         Debug.Log($"{_state} -> Trace");
