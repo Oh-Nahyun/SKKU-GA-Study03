@@ -236,6 +236,7 @@ public class Zombie : MonoBehaviour, IDamageable
 
             // 피격 : 공격(총알, 폭탄)을 받아 데미지를 받고 잠깐 멈칫한다.
             Debug.Log($"{_state} -> Hit");
+            _animator.SetTrigger("Hit");
             _state = ZombieState.Hit;
             StartCoroutine(Hit_Coroutine());
         }
@@ -253,7 +254,7 @@ public class Zombie : MonoBehaviour, IDamageable
     private IEnumerator Hit_Coroutine()
     {
         StopAgent();
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.5f);
 
         // 맞았으니 쫓아온다.
         Debug.Log($"{_state} -> Trace");
