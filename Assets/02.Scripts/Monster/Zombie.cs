@@ -18,6 +18,7 @@ public enum ZombieState
     Comeback,
     Attack,
     Hit,
+    Jump,
     Death
 }
 
@@ -35,6 +36,11 @@ public class Zombie : MonoBehaviour, IDamageable
     [SerializeField] private float _maxhealth = 30f;
     [SerializeField] private float _health;
 
+    [Header("점프")]
+    [SerializeField] private float _jumpHeight = 1.5f; // 점프 포물선의 최고 높이
+
+    [SerializeField] private float _jumpSpeed = 6f; // 점프 이동 속도
+
     [Header("이펙트")]
     [SerializeField] private GameObject _bloodSprayPrefab;
 
@@ -44,27 +50,29 @@ public class Zombie : MonoBehaviour, IDamageable
     private ZombieState _state = ZombieState.Idle;
     private float _attackTimer = 0f;
     private Animator _animator;
+    private ZombieState _stateBeforeJump = ZombieState.Trace; // 점프가 끝나면 돌아갈 상태
+    private Vector3 _jumpEndPosition; // 현재 점프의 착지 위치
 
     /// <summary>
     /// 길을 찾아 걷게 해주는 NavMeshAgent 컴포넌트
     /// </summary>
     private NavMeshAgent _agent;
 
-    // 좀비의 자식으로 생성한 피 스프레이들 (풀로 돌아갈 때 정리하기 위해 기억해 둔다)
+    // 좀비의 자식으로 생성한 피 스프레이 목록 (풀로 돌아갈 때 정리하기 위해 기억)
     private readonly List<GameObject> _bloodSprays = new();
 
     public float MaxHealth => _maxhealth;
     public float Health => _health;
 
-    // 체력이 변할 때마다 구독 중인 UI(체력바 등)에게 알린다.
+    // 체력이 변할 때마다 구독 중인 UI(체력바 등)에 알림
     public event Action OnDamaged = null;
 
-    // 좀비가 죽는 순간 구독 중인 대상(스포너 등)에게 알린다.
+    // 좀비가 죽는 순간 구독 중인 대상(스포너 등)에 알림
     public event Action<Zombie> OnDied = null;
 
     private void OnEnable()
     {
-        // 풀에서 꺼낼 때마다 새로 배치된 자리가 "처음 자리"가 된다.
+        // 풀에서 꺼낼 때마다 새로 배치된 자리가 "처음 자리"가 됨
         _startPosition = transform.position;
     }
 
@@ -75,12 +83,20 @@ public class Zombie : MonoBehaviour, IDamageable
         _player = GameObject.FindGameObjectWithTag("Player");
         _agent = GetComponent<NavMeshAgent>();
         _agent.speed = _moveSpeed;
+        _agent.autoTraverseOffMeshLink = false; // 링크 구간을 직선 이동 대신 직접 점프로 넘기 위해 자동 이동 끔
         _animator = GetComponentInChildren<Animator>();
     }
 
     private void Update()
     {
         if (GameManager.Instance.State != GameState.Playing) return;
+
+        // 추격이나 복귀 중 점프해야 하는 구간(Off-Mesh Link)에 도착하면 점프
+        if ((_state == ZombieState.Trace || _state == ZombieState.Comeback) && _agent.isOnOffMeshLink)
+        {
+            StartJump();
+            return;
+        }
 
         switch (_state)
         {
@@ -221,9 +237,10 @@ public class Zombie : MonoBehaviour, IDamageable
             return;
         }
 
+        bool isJumping = _state == ZombieState.Jump;
+
         _health -= damageInfo.Value;
         OnDamaged?.Invoke();
-        StopAllCoroutines();
         if (_health > 0f)
         {
             // TODO : 맞은 부위에 피 스프레이를 실행하고 싶다.
@@ -234,6 +251,11 @@ public class Zombie : MonoBehaviour, IDamageable
             bloodSpray.transform.forward = damageInfo.HitNormal;
             _bloodSprays.Add(bloodSpray);
 
+            // 점프 중에는 데미지만 받고 경직 없음 (공중에서 멈추면 링크 이동이 꼬이므로 점프를 끊지 않음)
+            if (isJumping) return;
+
+            StopAllCoroutines();
+
             // 피격 : 공격(총알, 폭탄)을 받아 데미지를 받고 잠깐 멈칫한다.
             Debug.Log($"{_state} -> Hit");
             _animator.SetTrigger("Hit");
@@ -242,6 +264,14 @@ public class Zombie : MonoBehaviour, IDamageable
         }
         else
         {
+            StopAllCoroutines();
+
+            // 점프 중 사망 시 공중에 멈추지 않도록 착지 위치로 옮기고 링크 이동 종료
+            if (isJumping)
+            {
+                CompleteJump();
+            }
+
             // 죽음 : 쓰러지고 잠시 뒤 사라진다.
             Debug.Log($"{_state} -> Death");
             _animator.SetTrigger("Death");
@@ -249,6 +279,57 @@ public class Zombie : MonoBehaviour, IDamageable
             OnDied?.Invoke(this);
             StartCoroutine(Death_Coroutine());
         }
+    }
+
+    private void StartJump()
+    {
+        Debug.Log($"{_state} -> Jump");
+        _stateBeforeJump = _state;
+        _state = ZombieState.Jump;
+        _animator.SetTrigger("Jump");
+        StartCoroutine(Jump_Coroutine());
+    }
+
+    private IEnumerator Jump_Coroutine()
+    {
+        // 링크 도착점까지 포물선 이동
+        OffMeshLinkData linkData = _agent.currentOffMeshLinkData;
+        Vector3 startPosition = transform.position;
+        _jumpEndPosition = linkData.endPos + Vector3.up * _agent.baseOffset;
+
+        // 도착점 방향으로 회전
+        Vector3 lookDirection = _jumpEndPosition - startPosition;
+        lookDirection.y = 0f;
+        if (lookDirection != Vector3.zero)
+        {
+            transform.forward = lookDirection.normalized;
+        }
+
+        float duration = Vector3.Distance(startPosition, _jumpEndPosition) / _jumpSpeed;
+        float elapsedTime = 0f;
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsedTime / duration);
+
+            // 4 * t * (1 - t) : t가 0.5일 때 1이 되는 포물선 (시작과 끝은 0)
+            Vector3 position = Vector3.Lerp(startPosition, _jumpEndPosition, t);
+            position.y += _jumpHeight * 4f * t * (1f - t);
+            transform.position = position;
+
+            yield return null;
+        }
+
+        CompleteJump();
+        _state = _stateBeforeJump;
+    }
+
+    // 착지 위치로 이동한 뒤, 에이전트가 다시 NavMesh 위에서 이동하도록 복귀
+    private void CompleteJump()
+    {
+        transform.position = _jumpEndPosition;
+        _agent.CompleteOffMeshLink();
+        _animator.ResetTrigger("Jump");
     }
 
     private IEnumerator Hit_Coroutine()
@@ -268,10 +349,10 @@ public class Zombie : MonoBehaviour, IDamageable
         ReturnToPool();
     }
 
-    // 파괴하지 않고, 다음에 다시 쓸 수 있게 상태를 되돌린 뒤 비활성화한다.
+    // 파괴하지 않고 다음에 재사용할 수 있게 상태를 되돌린 뒤 비활성화
     private void ReturnToPool()
     {
-        // 아직 남아 있는 피 스프레이는 비활성화되면 스스로 사라지지 못하므로 직접 정리한다.
+        // 남은 피 스프레이는 비활성화되면 스스로 사라지지 못하므로 직접 정리
         foreach (GameObject bloodSpray in _bloodSprays)
         {
             Destroy(bloodSpray);
