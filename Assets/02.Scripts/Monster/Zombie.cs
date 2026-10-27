@@ -1,9 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using UnityEngine;
-using UnityEngine.AdaptivePerformance.Provider;
+using UnityEngine.AI;
 using Debug = UnityEngine.Debug;
 
 // FSM(유한 상태 머신) : 유한개의 상태가 있고, 상태마다 행동을 다르게 함으로써 AI를 구현하는 유명한 방법
@@ -22,6 +21,7 @@ public enum ZombieState
     Death
 }
 
+[RequireComponent(typeof(NavMeshAgent))]
 public class Zombie : MonoBehaviour, IDamageable
 {
     [Header("스탯")]
@@ -38,11 +38,16 @@ public class Zombie : MonoBehaviour, IDamageable
     [Header("이펙트")]
     [SerializeField] private GameObject _bloodSprayPrefab;
 
-    private CharacterController _controller;
+    //private CharacterController _controller;
     private Vector3 _startPosition;
     private GameObject _player;
     private ZombieState _state = ZombieState.Idle;
     private float _attackTimer = 0f;
+
+    /// <summary>
+    /// 길을 찾아 걷게 해주는 NavMeshAgent 컴포넌트
+    /// </summary>
+    private NavMeshAgent _agent;
 
     // 좀비의 자식으로 생성한 피 스프레이들 (풀로 돌아갈 때 정리하기 위해 기억해 둔다)
     private readonly List<GameObject> _bloodSprays = new();
@@ -65,8 +70,10 @@ public class Zombie : MonoBehaviour, IDamageable
     private void Start()
     {
         _health = _maxhealth;
-        _controller = GetComponent<CharacterController>();
+        //_controller = GetComponent<CharacterController>();
         _player = GameObject.FindGameObjectWithTag("Player");
+        _agent = GetComponent<NavMeshAgent>();
+        _agent.speed = _moveSpeed;
     }
 
     private void Update()
@@ -133,14 +140,16 @@ public class Zombie : MonoBehaviour, IDamageable
             return;
         }
 
-        // 추격 : 플레이어를 쫓아간다.
-        Vector3 direction = _player.transform.position - transform.position;
-        direction.y = 0f;
-        direction.Normalize();
+        // // 추격 : 플레이어를 쫓아간다.
+        // Vector3 direction = _player.transform.position - transform.position;
+        // direction.y = 0f;
+        // direction.Normalize();
+        //
+        // transform.forward = direction;
+        // //_controller.Move(direction * _moveSpeed * Time.deltaTime); // 중력 없음
+        // _controller.SimpleMove(direction * _moveSpeed); // 중력 있음
 
-        transform.forward = direction;
-        //_controller.Move(direction * _moveSpeed * Time.deltaTime); // 중력 없음
-        _controller.SimpleMove(direction * _moveSpeed); // 중력 있음
+        _agent.SetDestination(_player.transform.position);
     }
 
     private void Comeback()
@@ -153,13 +162,15 @@ public class Zombie : MonoBehaviour, IDamageable
             return;
         }
 
-        // 복귀 : 처음 자리로 돌아간다.
-        Vector3 direction = _startPosition - transform.position;
-        direction.y = 0f;
-        direction.Normalize();
+        // // 복귀 : 처음 자리로 돌아간다.
+        // Vector3 direction = _startPosition - transform.position;
+        // direction.y = 0f;
+        // direction.Normalize();
+        //
+        // transform.forward = direction;
+        // _controller.SimpleMove(direction * _moveSpeed);
 
-        transform.forward = direction;
-        _controller.SimpleMove(direction * _moveSpeed);
+        _agent.SetDestination(_startPosition);
     }
 
     private void Attack()
@@ -246,6 +257,7 @@ public class Zombie : MonoBehaviour, IDamageable
         {
             Destroy(bloodSpray);
         }
+
         _bloodSprays.Clear();
 
         _health = _maxhealth;
