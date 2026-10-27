@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-// 총을 쏠 때 총구에서 맞은 곳까지 레이저 선이 짧게 번쩍이게 한다.
+// 총을 쏠 때 총구에서 맞은 곳까지 레이저 선이 짧게 번쩍이는 효과
 [RequireComponent(typeof(LineRenderer))]
 public class LaserEffect : MonoBehaviour
 {
@@ -21,14 +21,14 @@ public class LaserEffect : MonoBehaviour
         _lineRenderer.enabled = false;
     }
 
-    // 시작점에서 끝점까지 선을 그리고, 잠깐 뒤에 숨긴다.
+    // 시작점에서 끝점까지 선을 그린 뒤 잠깐 후에 숨김
     public void Show(Vector3 start, Vector3 end)
     {
         _lineRenderer.SetPosition(0, start);
         _lineRenderer.SetPosition(1, end);
         _lineRenderer.enabled = true;
 
-        // 연사 중이면 이전에 예약한 숨기기를 취소하고 다시 센다.
+        // 연사 중이면 이전에 예약한 숨기기를 취소하고 다시 카운트
         if (_hideCoroutine != null)
         {
             StopCoroutine(_hideCoroutine);

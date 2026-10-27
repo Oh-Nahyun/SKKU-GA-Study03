@@ -27,7 +27,7 @@ public class ZombiePool : MonoBehaviour
 
         _instance = this;
 
-        // 씬에 있는 좀비를 넣으면 죽을 때 비활성화되어 복제 원본으로 쓸 수 없다. 프리팹 에셋이어야 한다.
+        // 씬에 있는 좀비를 넣으면 죽을 때 비활성화되어 복제 원본으로 쓸 수 없음 (프리팹 에셋 필수)
         if (_zombiePrefab == null || _zombiePrefab.gameObject.scene.IsValid())
         {
             Debug.LogError("[ZombiePool] 좀비 프리팹 에셋(Project 창)을 할당해야 합니다.");
@@ -61,7 +61,7 @@ public class ZombiePool : MonoBehaviour
             // 비활성화된 좀비 반환
             if (zombie.gameObject.activeSelf == false)
             {
-                // 활성화되기 전에 배치해야 좀비가 이 자리를 "처음 자리"로 기억한다.
+                // 활성화 전에 배치해야 좀비가 이 자리를 "처음 자리"로 기억함
                 zombie.transform.SetPositionAndRotation(position, rotation);
                 zombie.gameObject.SetActive(true);
                 return zombie;

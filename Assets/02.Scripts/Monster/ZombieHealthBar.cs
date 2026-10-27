@@ -15,10 +15,10 @@ public class ZombieHealthBar : MonoBehaviour
 
     private void OnEnable()
     {
-        // 좀비가 피격될 때만 체력바를 갱신하도록 구독한다.
+        // 좀비가 피격될 때만 체력바를 갱신하도록 구독
         _zombie.OnDamaged += RefreshHealth;
 
-        // 프리팹 슬라이더의 초기값이 남아 있지 않도록 한 번 갱신한다.
+        // 프리팹 슬라이더의 초기값이 남지 않도록 한 번 갱신
         RefreshHealth();
     }
 

@@ -76,7 +76,7 @@ public class PlayerGunFire : MonoBehaviour
         // 4. 레이를 발사하고, 만일 부딛힌 물체가 있다면 이펙트 표시하기
         bool isHit = Physics.Raycast(ray, out hitInfo, _range);
 
-        // 맞았으면 맞은 자리까지, 안 맞았으면 사거리 끝까지 레이저를 보여 준다.
+        // 맞았으면 맞은 자리까지, 안 맞았으면 사거리 끝까지 레이저 표시
         if (_laserEffect != null)
         {
             Vector3 laserStart = _muzzle != null ? _muzzle.position : cameraTransform.position;
