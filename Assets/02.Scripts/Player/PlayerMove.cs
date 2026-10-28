@@ -36,6 +36,8 @@ public class PlayerMove : MonoBehaviour
 
     public float Stamina => _stamina;
 
+    private Animator _animator;
+
     [Header("컴포넌트")]
     [SerializeField] private CharacterController _characterController;
 
@@ -51,6 +53,7 @@ public class PlayerMove : MonoBehaviour
     private void Awake()
     {
         _characterController = GetComponent<CharacterController>();
+        _animator = GetComponentInChildren<Animator>();
         _stamina = MaxStamina;
     }
 
@@ -71,6 +74,8 @@ public class PlayerMove : MonoBehaviour
         direction = transform.TransformDirection(direction);
         // 로컬 좌표계 : 한 대상을 중심
         // 월드 좌표계 : 세상을 중심
+
+        _animator.SetFloat("MoveMotion", direction.magnitude);
 
         // 3. 땅에 서있지 않을때만 중력을 누적한다.
         if (_characterController.isGrounded == false)
