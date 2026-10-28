@@ -21,6 +21,13 @@ public class Player : MonoBehaviour, IDamageable
     // event 키워드 : 외부에서 해당 액션을 null로 바꾸거나 Invoke 할 수 없게 됨
     public event Action OnDamaged = null;
 
+    private Animator _animator;
+
+    private void Awake()
+    {
+        _animator = GetComponentInChildren<Animator>();
+    }
+
     private void Start()
     {
         _health = MaxHealth;
@@ -28,7 +35,11 @@ public class Player : MonoBehaviour, IDamageable
 
     public void TakeDamage(DamageInfo damageInfo)
     {
-        if (_health <= 0f) return;
+        if (_health <= 0f)
+        {
+            _animator.SetFloat("MoveMotion", 0f);
+            return;
+        }
 
         _health -= damageInfo.Value;
 
