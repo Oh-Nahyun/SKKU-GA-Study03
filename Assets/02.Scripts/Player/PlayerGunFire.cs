@@ -23,6 +23,12 @@ public class PlayerGunFire : MonoBehaviour
     private float _fireTimer = 0f;
     public int BulletCount = 0;
     private Coroutine _rerollCoroutine = null;
+    private Animator _animator;
+
+    private void Awake()
+    {
+        _animator = GetComponentInChildren<Animator>();
+    }
 
     private void Start()
     {
@@ -40,6 +46,11 @@ public class PlayerGunFire : MonoBehaviour
         bool isMouseVisible = Cursor.visible;
         if (!isMouseVisible && Input.GetButton("Fire1") && _fireTimer <= 0f && BulletCount > 0)
         {
+            if (_animator.GetFloat("MoveMotion") == 0)
+            {
+                _animator.SetTrigger("Attack");
+            }
+
             _fireTimer = _fireInterval;
             BulletCount--;
             Shoot();
