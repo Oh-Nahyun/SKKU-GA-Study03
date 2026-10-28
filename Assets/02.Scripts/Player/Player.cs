@@ -23,9 +23,12 @@ public class Player : MonoBehaviour, IDamageable
 
     private Animator _animator;
 
+    private int _injuredLayerIndex;
+
     private void Awake()
     {
         _animator = GetComponentInChildren<Animator>();
+        _injuredLayerIndex = _animator.GetLayerIndex("Injured Layer");
     }
 
     private void Start()
@@ -42,6 +45,11 @@ public class Player : MonoBehaviour, IDamageable
         }
 
         _health -= damageInfo.Value;
+
+        // 체력에 따라 Injured Layer의 가중치를 바꿔준다.
+        float healthPercent = _health / MaxHealth; // 0 ~ 1 사이의 값
+        float injured = Mathf.InverseLerp(0.5f, 0f, healthPercent);
+        _animator.SetLayerWeight(_injuredLayerIndex, injured);
 
         // if (OnDamaged != null)
         // {
