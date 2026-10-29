@@ -51,7 +51,7 @@ public class Player : MonoBehaviour, IDamageable
         {
             _weaponMode = WeaponMode.Normal;
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha1))
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             _weaponMode = WeaponMode.Sniper;
         }

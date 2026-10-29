@@ -18,6 +18,7 @@ public class PlayerGunFire : MonoBehaviour
     [SerializeField] private float _damage = 10f; // 공격력
     [SerializeField] private float _fireInterval = 0.1f; // 발사 속도
     [SerializeField] private int _maxBulletCount = 30; // 총알 최대 갯수 (탄창)
+    public int MaxBulletCount => _maxBulletCount;
     [SerializeField] private float _rerollTime = 3f; // 총알 장전 시간
 
     private float _fireTimer = 0f;

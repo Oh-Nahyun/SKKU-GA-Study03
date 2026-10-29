@@ -7,8 +7,10 @@ public class PlayerBombFire : MonoBehaviour
     [SerializeField] private Transform _firePoint;
     [SerializeField] private float _throwPower = 15f;
     [SerializeField] private int _bombMaxCount = 10;
+    public int BombMaxCount => _bombMaxCount;
 
     private int _bombCount = 0;
+    public int BombCount => _bombCount;
     private float _timer = 0f;
     private Animator _animator;
     private Bomb _bomb;
@@ -23,6 +25,7 @@ public class PlayerBombFire : MonoBehaviour
     private void Update()
     {
         if (GameManager.Instance.State != GameState.Playing) return;
+        if (_player.WeaponMode != WeaponMode.Normal) return;
 
         if (Input.GetButton("Fire2"))
         {
