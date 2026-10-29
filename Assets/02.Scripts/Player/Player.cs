@@ -12,6 +12,9 @@ public class Player : MonoBehaviour, IDamageable
 
     public float Health => _health;
 
+    private WeaponMode _weaponMode = WeaponMode.Normal;
+    public WeaponMode WeaponMode => _weaponMode;
+
     /// <summary>
     /// 최대 체력
     /// </summary>
@@ -34,6 +37,19 @@ public class Player : MonoBehaviour, IDamageable
     private void Start()
     {
         _health = MaxHealth;
+    }
+
+    private void Update()
+    {
+        // 숫자 키 1은 일반 모드, 2는 저격 모드
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            _weaponMode = WeaponMode.Normal;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            _weaponMode = WeaponMode.Sniper;
+        }
     }
 
     public void TakeDamage(DamageInfo damageInfo)

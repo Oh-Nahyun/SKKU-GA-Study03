@@ -11,10 +11,13 @@ public class PlayerBombFire : MonoBehaviour
     private int _bombCount = 0;
     private float _timer = 0f;
     private Animator _animator;
+    private Bomb _bomb;
+    private Player _player;
 
     private void Awake()
     {
         _animator = GetComponentInChildren<Animator>();
+        _player = GetComponent<Player>();
     }
 
     private void Update()
@@ -28,7 +31,10 @@ public class PlayerBombFire : MonoBehaviour
 
         // 1. 마우스 오른쪽 버튼 입력 받기
         bool isMouseVisible = Cursor.visible;
-        if (!isMouseVisible && Input.GetButtonUp("Fire2") && _bombCount < _bombMaxCount)
+        if (!isMouseVisible
+            && Input.GetButtonUp("Fire2")
+            && _bombCount < _bombMaxCount
+            && _player.WeaponMode == WeaponMode.Normal)
         {
             Shoot();
 
@@ -39,15 +45,15 @@ public class PlayerBombFire : MonoBehaviour
     private void Shoot()
     {
         // 2. 발사 위치에서 수류탄 생성하기
-        Bomb bomb = BombPool.Instance.GetBomb();
+        _bomb = BombPool.Instance.GetBomb();
 
-        if (bomb == null) return;
+        if (_bomb == null) return;
 
-        bomb.transform.position = _firePoint.position;
-        bomb.transform.rotation = Quaternion.identity;
+        _bomb.transform.position = _firePoint.position;
+        _bomb.transform.rotation = Quaternion.identity;
 
         // 3. 생성된 수류탄을 시선 방향으로 던지기
-        Rigidbody rigidbody = bomb.GetComponent<Rigidbody>();
+        Rigidbody rigidbody = _bomb.GetComponent<Rigidbody>();
         rigidbody.linearVelocity = Vector3.zero;
         rigidbody.angularVelocity = Vector3.zero;
         rigidbody.AddForce(Camera.main.transform.forward * _throwPower * _timer, ForceMode.Impulse);
