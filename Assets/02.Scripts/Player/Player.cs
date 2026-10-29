@@ -24,6 +24,9 @@ public class Player : MonoBehaviour, IDamageable
     // event 키워드 : 외부에서 해당 액션을 null로 바꾸거나 Invoke 할 수 없게 됨
     public event Action OnDamaged = null;
 
+    public event Action OnWeaponModeChanged = null;
+    public bool IsNormalMode = true;
+
     private Animator _animator;
 
     private int _injuredLayerIndex;
@@ -49,11 +52,15 @@ public class Player : MonoBehaviour, IDamageable
         // 숫자 키 1은 일반 모드, 2는 저격 모드
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
+            IsNormalMode = true;
             _weaponMode = WeaponMode.Normal;
+            OnWeaponModeChanged?.Invoke();
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
+            IsNormalMode = false;
             _weaponMode = WeaponMode.Sniper;
+            OnWeaponModeChanged?.Invoke();
         }
     }
 
