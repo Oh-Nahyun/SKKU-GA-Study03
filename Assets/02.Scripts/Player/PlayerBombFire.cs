@@ -10,6 +10,12 @@ public class PlayerBombFire : MonoBehaviour
 
     private int _bombCount = 0;
     private float _timer = 0f;
+    private Animator _animator;
+
+    private void Awake()
+    {
+        _animator = GetComponentInChildren<Animator>();
+    }
 
     private void Update()
     {
@@ -25,6 +31,8 @@ public class PlayerBombFire : MonoBehaviour
         if (!isMouseVisible && Input.GetButtonUp("Fire2") && _bombCount < _bombMaxCount)
         {
             Shoot();
+
+            _animator.SetBool("Throw", true);
         }
     }
 
