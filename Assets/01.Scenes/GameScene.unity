@@ -1353,6 +1353,7 @@ GameObject:
   - component: {fileID: 394931072}
   - component: {fileID: 394931073}
   - component: {fileID: 394931075}
+  - component: {fileID: 394931076}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -1566,6 +1567,20 @@ MonoBehaviour:
   _sniperZoom: {fileID: 1389008037}
   _normalPov: 60
   _sniperPov: 15
+--- !u!114 &394931076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 394931064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15183cd6e9510e348af09f4c6b902ce0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSwordSlash
+  _slashKey: 102
+  _slashCount: 3
 --- !u!1 &400113562
 GameObject:
   m_ObjectHideFlags: 0
