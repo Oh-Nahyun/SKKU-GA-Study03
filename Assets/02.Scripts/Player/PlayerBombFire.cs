@@ -32,7 +32,7 @@ public class PlayerBombFire : MonoBehaviour
         {
             Shoot();
 
-            _animator.SetBool("Throw", true);
+            _animator.SetTrigger("Throw");
         }
     }
 
