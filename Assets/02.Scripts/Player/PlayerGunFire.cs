@@ -10,7 +10,7 @@ public class PlayerGunFire : MonoBehaviour
     [Header("레이저")]
     [SerializeField] private LaserEffect _laserEffect;
 
-    [SerializeField] private Transform _muzzle; // 레이저가 시작되는 총구 위치 (비어 있으면 카메라 위치)
+    [SerializeField] private Transform _muzzlePoint; // 레이저가 시작되는 총구 위치 (비어 있으면 카메라 위치)
 
     [Header("스탯")]
     [SerializeField] private float _range = 100f; // 사거리
@@ -91,7 +91,7 @@ public class PlayerGunFire : MonoBehaviour
         // 맞았으면 맞은 자리까지, 안 맞았으면 사거리 끝까지 레이저 표시
         if (_laserEffect != null)
         {
-            Vector3 laserStart = _muzzle != null ? _muzzle.position : cameraTransform.position;
+            Vector3 laserStart = _muzzlePoint != null ? _muzzlePoint.position : cameraTransform.position;
             Vector3 laserEnd = isHit ? hitInfo.point : ray.GetPoint(_range);
             _laserEffect.Show(laserStart, laserEnd);
         }
