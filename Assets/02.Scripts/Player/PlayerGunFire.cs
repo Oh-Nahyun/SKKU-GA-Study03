@@ -20,6 +20,8 @@ public class PlayerGunFire : MonoBehaviour
     [SerializeField] private int _maxBulletCount = 30; // 총알 최대 갯수 (탄창)
     public int MaxBulletCount => _maxBulletCount;
     [SerializeField] private float _rerollTime = 3f; // 총알 장전 시간
+    [SerializeField] private GameObject[] _muzzleFlashes;
+    [SerializeField] private float _flashTime = 0.05f;
 
     private float _fireTimer = 0f;
     public int BulletCount = 0;
@@ -75,6 +77,8 @@ public class PlayerGunFire : MonoBehaviour
 
     private void Shoot()
     {
+        StartCoroutine(MuzzleFlash_Coroutine());
+
         // Ray : 레이저(시작 위치, 날아갈 방향)
         // Physics.Raycast : 레이저를 발사
         // RaycastHit : 레이저가 물체와 부딛히면 그 정보를 저장하는 구조체
@@ -134,5 +138,16 @@ public class PlayerGunFire : MonoBehaviour
         _rerollCoroutine = null;
 
         Debug.Log("재장전 완료!");
+    }
+
+    private IEnumerator MuzzleFlash_Coroutine()
+    {
+        int randomIndex = UnityEngine.Random.Range(0, _muzzleFlashes.Length);
+        GameObject flash = _muzzleFlashes[randomIndex];
+        flash.SetActive(true);
+
+        yield return new WaitForSeconds(_flashTime);
+
+        flash.SetActive(false);
     }
 }
