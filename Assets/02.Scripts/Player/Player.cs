@@ -52,16 +52,23 @@ public class Player : MonoBehaviour, IDamageable
         // 숫자 키 1은 일반 모드, 2는 저격 모드
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            IsNormalMode = true;
-            _weaponMode = WeaponMode.Normal;
-            OnWeaponModeChanged?.Invoke();
+            ChangeWeaponMode(true, WeaponMode.Normal);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            IsNormalMode = false;
-            _weaponMode = WeaponMode.Sniper;
-            OnWeaponModeChanged?.Invoke();
+            ChangeWeaponMode(false, WeaponMode.Sniper);
         }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            ChangeWeaponMode(false, WeaponMode.Melee);
+        }
+    }
+
+    private void ChangeWeaponMode(bool isNormalMode, WeaponMode weaponMode)
+    {
+        IsNormalMode = isNormalMode;
+        _weaponMode = weaponMode;
+        OnWeaponModeChanged?.Invoke();
     }
 
     public void TakeDamage(DamageInfo damageInfo)
