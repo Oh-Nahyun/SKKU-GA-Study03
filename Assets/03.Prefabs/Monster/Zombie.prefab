@@ -253,7 +253,7 @@ Transform:
   m_GameObject: {fileID: 5428029918124635398}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -435,6 +435,8 @@ MonoBehaviour:
   _moveSpeed: 5
   _maxhealth: 30
   _health: 30
+  _jumpHeight: 1.5
+  _jumpSpeed: 6
   _bloodSprayPrefab: {fileID: 1000013355911406, guid: d32aa916f50cac94db11e6f19821a58f, type: 3}
 --- !u!114 &8009184569185842440
 MonoBehaviour:

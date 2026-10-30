@@ -2609,7 +2609,7 @@ GameObject:
   - component: {fileID: 514194039}
   - component: {fileID: 514194038}
   - component: {fileID: 514194037}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6891,7 +6891,7 @@ Transform:
   m_GameObject: {fileID: 1727053363}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7843,6 +7843,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMeleeAttack
   _collider: {fileID: 1301439776}
+  _meleeHitMode: 1
+  _range: 2
+  _angle: 90
+  _targetMask:
+    serializedVersion: 2
+    m_Bits: 768
   _slashTrail: {fileID: 1579349864}
 --- !u!1 &1988767144
 GameObject:
