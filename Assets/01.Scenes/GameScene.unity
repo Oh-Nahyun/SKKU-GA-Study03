@@ -1574,7 +1574,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 394931064}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 15183cd6e9510e348af09f4c6b902ce0, type: 3}
   m_Name: 
@@ -3973,6 +3973,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1214765193}
     m_Modifications:
+    - target: {fileID: 2839534629690813053, guid: 474097a998b5d73419438a60ae3f68d5, type: 3}
+      propertyPath: m_Convex
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2856725389100671270, guid: 474097a998b5d73419438a60ae3f68d5, type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5225986389907009527, guid: 474097a998b5d73419438a60ae3f68d5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 6.8
@@ -5026,6 +5034,7 @@ GameObject:
   - component: {fileID: 1301439774}
   - component: {fileID: 1301439776}
   - component: {fileID: 1301439775}
+  - component: {fileID: 1301439777}
   m_Layer: 2
   m_Name: Blade
   m_TagString: Untagged
@@ -5096,6 +5105,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.1, y: 0.1, z: 0.9}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1301439777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1301439773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4fd4f13f3b0c6b4e9db5750c42e7eff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Katana
+  _damage: 25
 --- !u!1 &1313744861
 GameObject:
   m_ObjectHideFlags: 0
@@ -7641,13 +7663,34 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2890340462180134544, guid: e0ae10d6f4e832044b208ba7c268011a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1671013846}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: e0ae10d6f4e832044b208ba7c268011a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1986231223}
   m_SourcePrefab: {fileID: 100100000, guid: e0ae10d6f4e832044b208ba7c268011a, type: 3}
 --- !u!4 &1986231221 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: e0ae10d6f4e832044b208ba7c268011a, type: 3}
   m_PrefabInstance: {fileID: 1986231220}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1986231222 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: e0ae10d6f4e832044b208ba7c268011a, type: 3}
+  m_PrefabInstance: {fileID: 1986231220}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1986231223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1986231222}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 167588d576794124080473f46d83fb17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMeleeAttack
+  _collider: {fileID: 1301439776}
 --- !u!1 &1988767144
 GameObject:
   m_ObjectHideFlags: 0
