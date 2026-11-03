@@ -9,10 +9,12 @@ public class PlayerZoom : MonoBehaviour
     [SerializeField] private float _sniperPov = 15f;
 
     private Player _player;
+    private Camera _camera; // 매 프레임 Camera.main 조회 방지
 
     private void Awake()
     {
         _player = GetComponent<Player>();
+        _camera = Camera.main;
     }
 
     private void Update()
@@ -24,6 +26,6 @@ public class PlayerZoom : MonoBehaviour
 
         bool isZooming = _player.WeaponMode == WeaponMode.Sniper && Input.GetMouseButton(1);
         _sniperZoom.SetActive(isZooming);
-        Camera.main.fieldOfView = isZooming ? _sniperPov : _normalPov;
+        _camera.fieldOfView = isZooming ? _sniperPov : _normalPov;
     }
 }

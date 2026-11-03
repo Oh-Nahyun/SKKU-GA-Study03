@@ -15,6 +15,12 @@ public class UI_PlayerWeapons : MonoBehaviour
     private PlayerGunFire _playerGunFire;
     private PlayerBombFire _playerBombFire;
 
+    // 값이 바뀔 때만 텍스트를 다시 만들기 위한 이전 값 (-1 : 아직 표시 전)
+    private int _shownBulletCount = -1;
+    private int _shownMaxBulletCount = -1;
+    private int _shownBombCount = -1;
+    private int _shownBombMaxCount = -1;
+
     private void Awake()
     {
         _player = GameObject.FindWithTag("Player").GetComponent<Player>();
@@ -29,8 +35,24 @@ public class UI_PlayerWeapons : MonoBehaviour
 
     private void Update()
     {
-        _bulletCount.text = $"총알 {_playerGunFire.BulletCount} / {_playerGunFire.MaxBulletCount}";
-        _bombCount.text = $"폭탄 {10 - _playerBombFire.BombCount} / {_playerBombFire.BombMaxCount}";
+        // 매 프레임 문자열을 만들면 GC 할당과 TMP 메시 재생성이 반복되므로 변경 시에만 갱신
+        int bulletCount = _playerGunFire.BulletCount;
+        int maxBulletCount = _playerGunFire.MaxBulletCount;
+        if (bulletCount != _shownBulletCount || maxBulletCount != _shownMaxBulletCount)
+        {
+            _shownBulletCount = bulletCount;
+            _shownMaxBulletCount = maxBulletCount;
+            _bulletCount.text = $"총알 {bulletCount} / {maxBulletCount}";
+        }
+
+        int bombCount = _playerBombFire.BombCount;
+        int bombMaxCount = _playerBombFire.BombMaxCount;
+        if (bombCount != _shownBombCount || bombMaxCount != _shownBombMaxCount)
+        {
+            _shownBombCount = bombCount;
+            _shownBombMaxCount = bombMaxCount;
+            _bombCount.text = $"폭탄 {10 - bombCount} / {bombMaxCount}";
+        }
     }
 
     private void ChangeWeaponImage()

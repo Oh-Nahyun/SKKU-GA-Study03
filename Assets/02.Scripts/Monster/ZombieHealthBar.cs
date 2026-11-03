@@ -7,6 +7,7 @@ public class ZombieHealthBar : MonoBehaviour
     [SerializeField] private Slider _slider;
 
     private Zombie _zombie;
+    private Transform _cameraTransform; // 매 프레임 Camera.main 조회 방지
 
     private void Awake()
     {
@@ -30,7 +31,12 @@ public class ZombieHealthBar : MonoBehaviour
     private void LateUpdate()
     {
         // 빌보드 : 체력바가 카메라를 쳐다보게 한다.
-        _slider.transform.forward = Camera.main.transform.forward;
+        if (_cameraTransform == null)
+        {
+            _cameraTransform = Camera.main.transform;
+        }
+
+        _slider.transform.forward = _cameraTransform.forward;
     }
 
     private void RefreshHealth()
