@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum GameState
 {
@@ -18,6 +19,9 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     [SerializeField] private TextMeshProUGUI _stateText;
     [SerializeField] private GameObject _optionPopup;
+
+    // 씬의 UI를 참조하므로 씬과 생명주기를 함께함 (재시작 시 새 씬의 GameManager가 담당)
+    protected override bool IsPersistent => false;
 
     private void Start()
     {
@@ -42,10 +46,7 @@ public class GameManager : SingletonBehaviour<GameManager>
             }
             else if (_state == GameState.Pause)
             {
-                _state = GameState.Playing;
-                Time.timeScale = 1f;
-                _optionPopup.SetActive(false);
-                CursorManager.Instance.LockCursor();
+                Resume();
             }
         }
     }
@@ -67,5 +68,28 @@ public class GameManager : SingletonBehaviour<GameManager>
         _stateText.gameObject.SetActive(true);
         _stateText.text = "게임오버";
         _stateText.color = Color.red;
+    }
+
+    public void Resume()
+    {
+        _state = GameState.Playing;
+        Time.timeScale = 1f;
+        _optionPopup.SetActive(false);
+        CursorManager.Instance.LockCursor();
+    }
+
+    public void Restart()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void Quit()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 }

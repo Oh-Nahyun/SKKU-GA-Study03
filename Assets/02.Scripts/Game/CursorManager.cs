@@ -3,8 +3,10 @@ using UnityEngine;
 
 public class CursorManager : SingletonBehaviour<CursorManager>
 {
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         LockCursor();
     }
 
