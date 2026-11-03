@@ -19,6 +19,7 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     [SerializeField] private TextMeshProUGUI _stateText;
     [SerializeField] private GameObject _optionPopup;
+    [SerializeField] private GameObject _gameOverPopup;
 
     // 씬의 UI를 참조하므로 씬과 생명주기를 함께함 (재시작 시 새 씬의 GameManager가 담당)
     protected override bool IsPersistent => false;
@@ -26,6 +27,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     private void Start()
     {
         _optionPopup.SetActive(false);
+        _gameOverPopup.SetActive(false);
 
         StartCoroutine(StartSequence_Coroutine());
     }
@@ -65,9 +67,10 @@ public class GameManager : SingletonBehaviour<GameManager>
     public void GameOver()
     {
         _state = GameState.GameOver;
-        _stateText.gameObject.SetActive(true);
-        _stateText.text = "게임오버";
-        _stateText.color = Color.red;
+        _gameOverPopup.SetActive(true);
+
+        // 팝업 버튼을 누를 수 있도록 커서 표시
+        CursorManager.Instance.UnlockCursor();
     }
 
     public void Resume()
