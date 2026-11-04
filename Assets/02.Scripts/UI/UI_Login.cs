@@ -82,6 +82,12 @@ public class UI_Login : MonoBehaviour
         string passwordConfirm = _passwordConfirmInput.text;
 
         // TODO : ID와 비밀번호 규칙
+        // ID : 이메일 양식
+        // 비밀번호 : 영어만 되며 특수문자와 대문자 하나 이상을 포함한 7~15글자
+        // 규칙이 여기서만 쓰일까?
+        // 정리 과제
+        // - 정규표현식
+        // - 명세 패턴
 
         if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(password))
         {
