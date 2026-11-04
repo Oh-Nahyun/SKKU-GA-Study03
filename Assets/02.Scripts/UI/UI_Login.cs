@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,6 +12,16 @@ public class UI_Login : MonoBehaviour
         Login,
         Register
     }
+
+    // 계정 규칙
+    // 이메일: 아이디(영문, 숫자, ._%+-) @ 도메인(영문, 숫자, .-) . 최상위 도메인(영문 2글자 이상)
+    private static readonly Regex EmailRegex = new Regex(@"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$");
+
+    // 비밀번호: 전방 탐색 (?=...)으로 대문자·소문자·숫자·기호 각각 포함 여부 검사,
+    // 전체는 출력 가능 ASCII('!'~'~' 범위, 공백·한글 제외) 8~30 글자
+    // 기호 범위: !-/  :-@  [-`  {-~  (영문·숫자를 뺀 ASCII 기호)
+    private static readonly Regex PasswordRegex =
+        new Regex(@"^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!-/:-@\[-`{-~])[!-~]{8,30}$");
 
     [Header("입력 칸")]
     [SerializeField] private TMP_InputField _idInput;
@@ -91,17 +102,30 @@ public class UI_Login : MonoBehaviour
         string password = _passwordInput.text;
         string passwordConfirm = _passwordConfirmInput.text;
 
-        // TODO : ID와 비밀번호 규칙
-        // ID : 이메일 양식
-        // 비밀번호 : 영어만 되며 특수문자와 대문자 하나 이상을 포함한 7~15글자
-        // 규칙이 여기서만 쓰일까?
-        // 정리 과제
-        // - 정규표현식
-        // - 명세 패턴
-
         if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(password))
         {
             _messageText.text = "아이디와 비밀번호를 입력해주세요.";
+            return;
+        }
+
+        // 정규표현식(정규식)
+        // 문자열에서 특정한 규칙이나 패턴을 찾기 위해 사용하는 문법
+        // - 데이터 검증(이메일 형식, 주민번호 형식, 비밀번호 형식)
+        // - 문자열 검색(TODO라는게 있나?, 한국어가 있나?)
+        // - 문자열 치환(규칙에 맞는 문자열을 찾아서 다른 문자열로 변경)
+        // - 웹 크롤링 & 파싱
+
+        // ID 규칙: 이메일
+        if (!EmailRegex.IsMatch(id))
+        {
+            _messageText.text = "아이디는 이메일 형식이어야 합니다.";
+            return;
+        }
+
+        // 비밀번호 규칙: 대문자, 소문자, 숫자, 기호를 포함한 8~30 글자
+        if (!PasswordRegex.IsMatch(password))
+        {
+            _messageText.text = "비밀번호는 대문자, 소문자, 숫자, 기호를 모두 포함한 8~30글자여야 합니다.";
             return;
         }
 
