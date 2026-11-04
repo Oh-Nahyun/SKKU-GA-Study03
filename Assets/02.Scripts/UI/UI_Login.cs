@@ -13,16 +13,6 @@ public class UI_Login : MonoBehaviour
         Register
     }
 
-    // 계정 규칙
-    // 이메일: 아이디(영문, 숫자, ._%+-) @ 도메인(영문, 숫자, .-) . 최상위 도메인(영문 2글자 이상)
-    private static readonly Regex EmailRegex = new Regex(@"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$");
-
-    // 비밀번호: 전방 탐색 (?=...)으로 대문자·소문자·숫자·기호 각각 포함 여부 검사,
-    // 전체는 출력 가능 ASCII('!'~'~' 범위, 공백·한글 제외) 8~30 글자
-    // 기호 범위: !-/  :-@  [-`  {-~  (영문·숫자를 뺀 ASCII 기호)
-    private static readonly Regex PasswordRegex =
-        new Regex(@"^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!-/:-@\[-`{-~])[!-~]{8,30}$");
-
     [Header("입력 칸")]
     [SerializeField] private TMP_InputField _idInput;
 
@@ -44,6 +34,8 @@ public class UI_Login : MonoBehaviour
     private Mode _mode = Mode.Login;
 
     private PlayerPrefsAccountRepository _repository = new PlayerPrefsAccountRepository();
+    private AccountIdSpecification _idSpec = new AccountIdSpecification();
+    private AccountPasswordSpecification _passwordSpec = new AccountPasswordSpecification();
 
     private void Start()
     {
@@ -116,16 +108,16 @@ public class UI_Login : MonoBehaviour
         // - 웹 크롤링 & 파싱
 
         // ID 규칙: 이메일
-        if (!EmailRegex.IsMatch(id))
+        if (!_idSpec.IsSatisfiedBy(id))
         {
-            _messageText.text = "아이디는 이메일 형식이어야 합니다.";
+            _messageText.text = _idSpec.ErrorMessage;
             return;
         }
 
         // 비밀번호 규칙: 대문자, 소문자, 숫자, 기호를 포함한 8~30 글자
-        if (!PasswordRegex.IsMatch(password))
+        if (!_passwordSpec.IsSatisfiedBy(password))
         {
-            _messageText.text = "비밀번호는 대문자, 소문자, 숫자, 기호를 모두 포함한 8~30글자여야 합니다.";
+            _messageText.text = _passwordSpec.ErrorMessage;
             return;
         }
 
