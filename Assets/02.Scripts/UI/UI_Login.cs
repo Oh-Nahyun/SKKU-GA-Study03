@@ -32,6 +32,8 @@ public class UI_Login : MonoBehaviour
 
     private Mode _mode = Mode.Login;
 
+    private PlayerPrefsAccountRepository _repository = new PlayerPrefsAccountRepository();
+
     private void Start()
     {
         Refresh();
@@ -72,7 +74,15 @@ public class UI_Login : MonoBehaviour
             return;
         }
 
-        SceneManager.LoadScene(_gameSceneName);
+        if (_repository.CheckPassword(id, password))
+        {
+            SceneManager.LoadScene(_gameSceneName);
+        }
+        else
+        {
+            _messageText.text = "아이디와 비밀번호를 확인해주세요.";
+            return;
+        }
     }
 
     public void Register()
@@ -101,8 +111,15 @@ public class UI_Login : MonoBehaviour
             return;
         }
 
-        // TODO : 중복 ID 검사
-        // TODO : 실제 회원가입 데이터 저장
+        // 중복 ID 검사
+        if (_repository.Exists(id))
+        {
+            _messageText.text = "이미 존재하는 아이디입니다.";
+            return;
+        }
+
+        // 실제 회원가입 데이터 저장
+        _repository.Register(id, password);
 
         GotoLogin();
         _messageText.text = "가입했습니다. 로그인 해주세요.";
